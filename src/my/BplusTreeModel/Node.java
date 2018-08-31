@@ -8,6 +8,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import lombok.Data;
+
+/**
+ * B+树的节点类型
+ * 
+ * @author hmj
+ *
+ */
 @Data
 public class Node {
 
@@ -31,7 +38,12 @@ public class Node {
 
 	/** 子节点 */
 	protected List<Node> children;
-
+	/**
+	 * 构造方法  初始化entries和children
+	 * 
+	 * @param isLeaf
+	 * 				是否为叶子节点
+	 */
 	public Node(boolean isLeaf) {
 		this.isLeaf = isLeaf;
 		entries = new ArrayList<Entry<Comparable, ArrayList<String>>>();
@@ -40,7 +52,14 @@ public class Node {
 			children = new ArrayList<Node>();
 		}
 	}
-
+	/**
+	 * 构造方法
+	 * 
+	 * @param isLeaf
+	 *			是否为叶子节点 
+	 * @param isRoot
+	 *			是否为根节点
+	 */
 	public Node(boolean isLeaf, boolean isRoot) {
 		this(isLeaf);
 		this.isRoot = isRoot;
@@ -52,6 +71,14 @@ public class Node {
 	public boolean isRoot() {
 		return isRoot;
 	}
+	/**
+	 * 根据用户输入的文件索引值进行查询操作
+	 * 
+	 * @param key
+	 * 			输入的索引值
+	 * @return
+	 * 			返回list集合
+	 */
 	// 查询操作
 	public List<String> get(Comparable key) {
 
@@ -86,7 +113,15 @@ public class Node {
 
 		return null;
 	}
-
+	/**
+	 * 模糊查询操作 遍历每个叶子节点的entries集合 把每个索引值值与输入的索引值进行indexOf操作 如果返回非负数 模糊匹配成功 返回查询结果
+	 * @param key
+	 * 			用户输入的索引值
+	 * @param tree
+	 * 			指定在哪一棵B+树进行查询
+	 * @return
+	 * 			返回list集合
+	 */
 	public List<String> getByVague(Comparable key, BplusTree tree) { // 模糊查询
 		Node head = tree.getHead(); // 得到叶子节点的链表头
 		// TODO Auto-generated method stub
@@ -112,8 +147,17 @@ public class Node {
 		}
 
 	}
-
-	public List<String> getByType(Comparable key, BplusTree tree) { // 类型查询
+	/**
+	 * 进行文件类型查询操作 文件类型由用户输入 遍历每个叶子节点的entries集合 提取出文件类型值与输入文件类型值进行equals操作 返回查询结果
+	 * 
+	 * @param key
+	 * 			用户输入的文件类型值
+	 * @param tree
+	 * 			指定在哪一棵B+树进行查询
+	 * @return
+	 * 			返回list集合
+	 */
+	public List<String> getOnTypeByInput(Comparable key, BplusTree tree) { // 类型查询
 
 		Node head = tree.getHead(); // 得到叶子节点的链表头
 		// TODO Auto-generated method stub
@@ -124,7 +168,7 @@ public class Node {
 			for (Entry<Comparable, ArrayList<String>> entry : entries2) { // 遍历关键字集合
 				if (entry.getKey().toString().contains(".")) {
 					String[] keytype = entry.getKey().toString().split("\\."); // 把每个节点的关键字集合中的文件类型提取出来
-					if (keytype[keytype.length - 1].toUpperCase().indexOf(key.toString().toUpperCase()) >= 0) { // 看输入的文件类型是否存在
+					if (keytype[keytype.length - 1].toUpperCase().equals(key.toString().toUpperCase())) { // 看输入的文件类型是否存在
 						// 返回找到的对象 即返回文件绝对路径
 						temppath.addAll(entry.getValue());
 					}
@@ -138,8 +182,17 @@ public class Node {
 			return null;
 		}
 	}
-
-	public List<String> getByButton(Comparable key, BplusTree tree) { // 按searchtype查询
+	/**
+	 * 进行文件类型查询 文件类型值由系统默认提供 把文件类型值加入到ArrayList中 遍历叶子节点查询 返回查询结果
+	 * 
+	 * @param key
+	 * 			用户选择的文件基本类型 这里提供了四种 影视、音乐、文档、图片；
+	 * @param tree
+	 * 			指定在哪一棵B+树进行查询
+	 * @return
+	 * 			返回list集合
+	 */
+	public List<String> getOnTypeByExist(Comparable key, BplusTree tree) { // 按searchtype查询
 		String searchType = key.toString();
 		List<String> res = new ArrayList<String>();
 		if (searchType.equals("影视")) {
@@ -236,7 +289,12 @@ public class Node {
 		return null;
 	}
 
-	/** 删除节点 */
+	/**
+	 * 删除节点 遍历关键字集合 匹配key值进行删除操作
+	 * 
+	 * @param key
+	 *			待删除元素的索引值
+	 */
 	protected void remove(Comparable key) {
 		int index = -1;
 		for (int i = 0; i < entries.size(); i++) {
@@ -250,7 +308,17 @@ public class Node {
 		}
 	}
 
-	// 插入节点
+	/**
+	 * 元素的插入操作 如果是叶子节点且关键字个数未饱和 则直接插入
+	 * 			        如果是叶子节点但关键字个数饱和 需要分裂 设置节点链接 把原节点的值加入分裂的左右节点中 在判断是否为根节点 进行不同的链接节点操作
+	 * 			        如果不是叶子节点 比较key值大小 找到对应的叶子节点插入位置 递归操作
+	 * @param key
+	 * 			待插入元素的索引值
+	 * @param arrayList
+	 * 			待插入元素的路径值
+	 * @param tree
+	 * 			指定在哪一棵B+树进行查询
+	 */
 	public void insertOrUpdate(Comparable key, ArrayList<String> arrayList, BplusTree tree) {
 		// 如果是叶子节点
 		if (this.isLeaf) {
@@ -352,7 +420,11 @@ public class Node {
 	}
 
 	/**
-	 * 插入节点后中间节点的更新 让每个节点的子节点个数合法 采用递归的思想
+	 * inserOrUpdate进行插入元素之后 校验每个节点的子节点个数是否合法 采用递归操作
+	 * 				B+树的每个非叶节点的子节点数最大值为M，M为树的阶数
+	 * 
+	 * @param tree
+	 * 			指定在哪一棵B+树进行查询
 	 */
 	protected void updateInsert(BplusTree tree) {
 
@@ -412,8 +484,14 @@ public class Node {
 	}
 
 	/**
-	 * 调整节点关键字 校验、调整每个节点关键字个数合法
+	 * 调整每个节点的关键字个数和值是否合法
+	 * B+树的每个节点的关键字个数需要满足 大于M/2小于M，并且关键个数必须大于2
+	 * 每个节点的关键字为它的各个孩子节点的关键字集合的最小值
 	 * 
+	 * @param node
+	 *			待调整的B+树节点 
+	 * @param tree
+	 *			node所在的B+树
 	 */
 	protected static void validate(Node node, BplusTree tree) {
 
@@ -444,9 +522,10 @@ public class Node {
 	}
 
 	/**
-	 * 删除节点后中间节点的更新
+	 * 删除节点后  调整当前节点的子节点个数是否合法
 	 * 
-	 * 调整当前节点的子节点个数是否合法
+	 * @param tree
+	 *			B+树
 	 */
 	protected void updateRemove(BplusTree tree) {
 
@@ -542,7 +621,15 @@ public class Node {
 			}
 		}
 	}
-
+	
+	/**
+	 * 删除元素操作
+	 * 
+	 * @param key
+	 *			待删除元素的索引值 
+	 * @param tree
+	 *			指定在哪一棵B+树进行删除操作	
+	 */
 	public void remove(Comparable key, BplusTree tree) {
 		// 如果是叶子节点
 		if (isLeaf) {
@@ -651,7 +738,14 @@ public class Node {
 		}
 	}
 
-	/** 判断当前节点是否包含该关键字 */
+	/**
+	 * 遍历当前节点的关键字集合 判断是否包含查询的索引值
+	 * 
+	 * @param key
+	 *			待查询的索引值 
+	 * @return
+	 * 			返回boolean值
+	 */
 	protected boolean contains(Comparable key) {
 		for (Entry<Comparable, ArrayList<String>> entry : entries) {
 			if (entry.getKey().compareTo(key) == 0) {
@@ -662,6 +756,15 @@ public class Node {
 	}
 
 	/** 插入到当前节点的关键字中 */
+	/**
+	 * 把元素插入当前节点的关键字集合中 确定插入元素的位置
+	 * B+树的每个关键字集合中的值是有序的 升序
+	 * 
+	 * @param key
+	 * 			待插入元素的索引值
+	 * @param arrayList
+	 * 			待插入元素的路径值
+	 */
 	protected void insertOrUpdate(Comparable key, ArrayList<String> arrayList) {
 		Entry<Comparable, ArrayList<String>> entry = new SimpleEntry<Comparable, ArrayList<String>>(key, arrayList);
 		// 如果关键字列表长度为0，则直接插入
@@ -739,7 +842,9 @@ public class Node {
 //	public void setRoot(boolean isRoot) {
 //		this.isRoot = isRoot;
 //	}
-
+	/**
+	 * 重写的toString方法
+	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("isRoot: ");
@@ -757,15 +862,34 @@ public class Node {
 		return sb.toString();
 
 	}
-
+	
+	/**
+	 * 得到关键字集合的大小
+	 * 
+	 * @return
+	 * 			返回关键字集合大小
+	 */
 	public int size() {
 		return entries.size();
 	}
-
+	
+	/**
+	 * 通过index查询得到关键字值
+	 * @param index
+	 * 			索引值
+	 * @return
+	 * 			返回一个Entry
+	 */
 	public Entry<Comparable, ArrayList<String>> entryAt(int index) {
 		return entries.get(index);
 	}
-
+	/**
+	 * 通过index查询得到孩子节点
+	 * @param index
+	 * 			索引值
+	 * @return
+	 * 			返回一个Node对象
+	 */
 	public Node childAt(int index) {
 		if (isLeaf())
 			throw new UnsupportedOperationException("Leaf node doesn't have children.");

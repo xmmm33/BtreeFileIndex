@@ -11,8 +11,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.swing.filechooser.FileSystemView;
 
 import net.sf.json.JSONArray;
-
+/**
+ * 把磁盘符数据传到前端
+ * 
+ * @author hmj
+ *
+ */
 public class ShowDiskNameServlet extends HttpServlet {
+	/**序列化ID */
 	private static final long serialVersionUID = 1L;
 
 	public ShowDiskNameServlet() {

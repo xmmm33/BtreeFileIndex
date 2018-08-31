@@ -9,8 +9,14 @@ import java.util.Map.Entry;
 import my.BplusTreeModel.BplusTree;
 import my.IndexFileService.FileListService;
 import my.IndexServlet.BPTreeIndexFileServlet;
-
+/**
+ * 处理用户选择了类型查询但是不需要重建索引的逻辑操作
+ * 
+ * @author hmj
+ *
+ */
 public class Handler4 extends Handler{
+	/**结果List集合 */
 	List<String> resultList = new ArrayList<>(); 
 	@Override
 	public ArrayList<String> requestFilename(String filename, String vague, String index, String root, String type) {

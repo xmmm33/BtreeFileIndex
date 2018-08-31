@@ -19,16 +19,33 @@ import java.util.Map.Entry;
 import my.BplusTreeModel.BplusTree;
 import my.BplusTreeModel.Node;
 
+/**
+ * 进行文件遍历 、B+树的构建、 保存索引、 得到某一个B+树的数据map 、读取文件索引
+ * 
+ * @author hmj
+ *
+ */
 public class FileListService {
+	/** 结果集map */
 	Map<String, ArrayList<String>> fileListMap = new HashMap<String, ArrayList<String>>();
+	/** 索引存放集合*/
 	HashSet<String> indexSet = new HashSet<String>(); // 只用来存放key值 文件名或目录名
-	// 全局索引存放的位置
+	/** 全局索引存放位置*/
 	private static String IndexPath = "G:/全盘索引.txt";
-	// 需要生成的索引树
+	
+	/** 得到磁盘B+树对象*/
 	private BplusTree treeDisk = new BplusTree(30); // 阶数为30，磁盘树
+	/** 得到全局B+树对象*/
 	private static BplusTree treeAll = new BplusTree(30);// 全局树
-
-	// 扫描特定路径下的所有文件
+	
+	/**
+	 * 非递归扫描某一路径下的所有文件 返回一个map
+	 * 
+	 * @param path
+	 * 			待搜索的路径
+	 * @return
+	 * 			返回结果map
+	 */
 	public Map<String, ArrayList<String>> scanFiles(String path) {
 		LinkedList<File> list = new LinkedList<File>();
 		File dir = new File(path);
@@ -100,7 +117,22 @@ public class FileListService {
 		return fileListMap;
 	}
 
-	// 生成单个磁盘树
+	/**
+	 * 建立某一个磁盘的磁盘B+树
+	 * 
+	 * @param root
+	 * 			需要建树的磁盘
+	 * @param index
+	 * 			是否需要重建索引的标志位
+	 * @return
+	 * 			返回B+树对象
+	 * @throws FileNotFoundException
+	 * 			抛出文件未找到异常
+	 * @throws IOException
+	 * 			抛出IO异常
+	 * @throws ClassNotFoundException
+	 * 			抛出Class未找到异常
+	 */
 	public BplusTree constructTree(String root, String index)
 			throws FileNotFoundException, IOException, ClassNotFoundException {
 		Map<String, ArrayList<String>> res = new HashMap<String, ArrayList<String>>();
@@ -133,7 +165,14 @@ public class FileListService {
 		return treeDisk;
 	}
 
-	// 得到全盘文件
+	/**
+	 * 扫描所有磁盘的文件
+	 * 
+	 * 通过遍历每个磁盘 调用scanFiles方法 返回一个map
+	 * 
+	 * @return
+	 *			返回结果map
+	 */
 	public Map<String, ArrayList<String>> scanAllFiles() {
 		File[] fileRoots = File.listRoots();
 		if (fileRoots.length != 0) {
@@ -148,7 +187,14 @@ public class FileListService {
 			return null;
 	}
 
-	// 生成全局树
+	/**
+	 * 构建全磁盘B+树
+	 * 
+	 * @param index
+	 * 			是否需要重建索引的标志位
+	 * @return
+	 * 			返回生成的全局B+树
+	 */
 	public BplusTree constructAllTree(String index) {
 		File fileAllIndex = new File(IndexPath); // 创建保存全局索引的文件
 		Map<String, ArrayList<String>> res = new HashMap<String, ArrayList<String>>();
@@ -172,7 +218,18 @@ public class FileListService {
 		return treeAll;
 	}
 
-	// 保存索引
+	/**
+	 * 把磁盘B+树的索引持久化到磁盘上
+	 * 
+	 * @param fileName
+	 * 				索引存储文件
+	 * @param fileMap
+	 * 				待存储的索引
+	 * @throws FileNotFoundException
+	 * 				抛出文件未找到异常
+	 * @throws IOException
+	 * 				抛出IO异常
+	 */
 	public void saveIndex(String fileName, Map<String, ArrayList<String>> fileMap)
 			throws FileNotFoundException, IOException {
 		ObjectOutputStream objectOutputStream = null;
@@ -182,7 +239,18 @@ public class FileListService {
 		objectOutputStream.close();
 	}
 
-	// 保存索引
+	/**
+	 * 把全局B+树的索引持久到磁盘上
+	 * 
+	 * @param fileName
+	 * 				索引存储文件
+	 * @param fileMap
+	 * 				待存储的索引
+	 * @throws FileNotFoundException
+	 * 				抛出文件未找到异常
+	 * @throws IOException
+	 * 				抛出IO异常
+	 */
 	public void saveAllIndex(String fileName, Map<String, ArrayList<String>> fileMap)
 			throws FileNotFoundException, IOException {
 		FileOutputStream fileOutputStream = new FileOutputStream(fileName, true);
@@ -192,23 +260,27 @@ public class FileListService {
 		objectOutputStream.close();
 	}
 
-	/*
-	 * 所有的数据项都是存在叶子节点，而叶子节点之间有指向。所以遍历b+树的话 也就只需要遍历叶子节点即可
+	/**
+	 * 遍历某一个B+树的关键字集合 把数据放入map中
 	 * 
+	 * @param tree
+	 * 			需要遍历的B+树
+	 * @return
+	 * 			返回结果map
 	 */
 	public static Map<String, ArrayList<String>> getMap(BplusTree tree) {
 		Map<String, ArrayList<String>> res = new HashMap<String, ArrayList<String>>();
 		Node head = tree.getHead();
 		while (head != null) {
 			List<Entry<Comparable, ArrayList<String>>> list = head.getEntries();
-			Iterator<Entry<Comparable, ArrayList<String>>> iterator = list.iterator();
+//			Iterator<Entry<Comparable, ArrayList<String>>> iterator = list.iterator();
 
-			while (iterator.hasNext()) {
-				Map.Entry entry = (Map.Entry) iterator.next();
-				String key = entry.getKey().toString();
-				ArrayList<String> value = (ArrayList<String>) entry.getValue();
-				res.put(key, value);
-			}
+//			while (iterator.hasNext()) {
+//				Map.Entry entry = (Map.Entry) iterator.next();
+//				String key = entry.getKey().toString();
+//				ArrayList<String> value = (ArrayList<String>) entry.getValue();
+//				res.put(key, value);
+//			}
 			for (int i = 0; i < list.size(); i++) {
 				String key = list.get(i).getKey().toString();
 				ArrayList<String> Lujing = list.get(i).getValue();
@@ -219,7 +291,20 @@ public class FileListService {
 		return res;
 	}
 
-	// 读取索引文件内容
+	/**
+	 * 读取索引文件
+	 * 
+	 * @param fileName
+	 * 				索引存储文件
+	 * @return
+	 * 				返回结果map
+	 * @throws FileNotFoundException
+	 * 				抛出文件未找到异常
+	 * @throws IOException
+	 * 				抛出IO异常
+	 * @throws ClassNotFoundException
+	 * 				抛出Class未找到异常
+	 */
 	public Map<String, ArrayList<String>> readFileIndex(String fileName)
 			throws FileNotFoundException, IOException, ClassNotFoundException {
 		ObjectInputStream objectInputStream = null;

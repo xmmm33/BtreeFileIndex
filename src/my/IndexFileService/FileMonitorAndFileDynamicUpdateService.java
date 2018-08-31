@@ -5,7 +5,14 @@ import my.IndexServlet.BPTreeIndexFileServlet;
 import net.contentobjects.jnotify.JNotify;
 import net.contentobjects.jnotify.JNotifyAdapter;
 import net.contentobjects.jnotify.JNotifyException;
-
+/**
+ * 使用第三方JNOTIFYjar包进行文件监控 同时进行索引动态增量更新
+ * 
+ * 因为要同时监控多个磁盘 索引需要实现Runnable接口
+ * 
+ * @author hmj
+ *
+ */
 public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter implements Runnable{
 	
 	/** 关注目录的事件 */
@@ -22,12 +29,18 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 		return jnotifyPath;
 	}
 	
-	public FileMonitorAndFileDynamicUpdateService(){
-		
-	}
+	/**
+	 * 构造方法 得到监控路径值
+	 * 
+	 * @param monitorPath
+	 * 				监听路径
+	 */
 	public FileMonitorAndFileDynamicUpdateService(String monitorPath){
 		this.jnotifyPath = monitorPath;
 	}
+	/**
+	 * 启动监控服务
+	 */
 	public void startWatch(){
 		try {
 			this.watchID = JNotify.addWatch(jnotifyPath, mask, watchSubtree, this);
@@ -46,6 +59,8 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 	}
 	/**
 	 * 当监听目录下一旦有新的文件被创建，则即触发该事件
+	 * 
+	 * 并动态更新索引
 	 * 
 	 * @param wd
 	 *            监听线程id
@@ -81,11 +96,11 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 			}*/
 			ArrayList<String> treediskList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
 			if(treediskList != null){ 
-				BPTreeIndexFileServlet.treemap.get(root).get(fileName).clear();//不清除的话 后面查询同名文件 会出现以前同名文件留下的路径
+				BPTreeIndexFileServlet.treemap.get(root).get(fileName).clear();				//不清除的话 后面查询同名文件 会出现以前同名文件留下的路径
 				BPTreeIndexFileServlet.treemap.get(root).get(fileName).add(rootPath  + name);
 				System.out.println("索引更新成功");
 			}else{
-				treediskList = new ArrayList<String>();
+				treediskList = new ArrayList<String>();                                     //防止空指针异常
 				treediskList.add((rootPath  + name).toString());
 				BPTreeIndexFileServlet.treemap.get(root).insertOrUpdate(fileName, treediskList);
 				System.out.println("索引更新成功");
@@ -154,7 +169,7 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 			 String fileLujing =root +  name.substring(0,name.lastIndexOf("\\")+1);
 			 //测试删除文件路径是否得到
 			 ArrayList<String> treeList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
-			 //排除同名文件 但路径不同 删除的时候正确删除
+			 //排除同名文件但路径不同 ，删除的时候正确删除
 			 if(treeList.size() != 1 && !treeList.isEmpty()){
 				 for(int i=0; i<treeList.size(); i++){
 					 if(treeList.get(i).toString().substring(0, treeList.get(i).toString().lastIndexOf("\\")+1).equals(fileLujing)){
@@ -195,7 +210,9 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 	public void fileModified(int wd, String rootPath, String name) {
 		  System.err.println(jnotifyPath + "the modified file path is " + rootPath  + name);		  
 		 }
-	
+	/**
+	 * 把监控方法放到run方法中
+	 */
 	public void run() {
 		try {
 			startWatch();

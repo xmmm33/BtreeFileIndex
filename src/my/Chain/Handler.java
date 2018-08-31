@@ -5,7 +5,18 @@ import java.io.IOException;
 import java.nio.file.attribute.AclEntry.Builder;
 import java.util.ArrayList;
 
+/**
+ * 责任链设计模式
+ * 
+ * 处理逻辑操作
+ * 
+ * 提供逻辑操作处理的抽象方法 设置下一级操作者的方法
+ * 
+ * @author hmj
+ *
+ */
 public abstract class Handler {
+	/**责任下一级处理人 */
 	protected Handler next;
     //设置下一级责任链
     public void setSuccessor(Handler handler){

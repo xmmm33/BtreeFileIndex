@@ -9,12 +9,18 @@ import java.util.Map;
 import my.BplusTreeModel.BplusTree;
 import my.IndexFileService.FileListService;
 import my.IndexServlet.BPTreeIndexFileServlet;
-
+/**
+ * 处理用户选择了模糊查询但是不需要重建索引的逻辑操作
+ * 
+ * @author hmj
+ *
+ */
 public class Handler2 extends Handler {
+	/**结果List集合 */
 	List<String> resultList = new ArrayList<>(); 
 	@Override
 	public ArrayList<String> requestFilename(String filename, String vague, String index, String root, String type) {
-		if(!filename.isEmpty() && vague.equals("true") && !index.equals("true") && !root.isEmpty()){
+		if(!filename.isEmpty() && vague.equals("true") && !type.equals("true") && !index.equals("true") && !root.isEmpty()){
 			if(root.equals("全盘")){
 				long startTime = System.nanoTime();
 				for(Map.Entry<String, BplusTree> temp : BPTreeIndexFileServlet.treemap.entrySet()){

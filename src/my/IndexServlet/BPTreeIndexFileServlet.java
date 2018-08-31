@@ -1,5 +1,7 @@
 package my.IndexServlet;
-
+/**
+ * 测试Servlet
+ */
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,12 +23,15 @@ import my.IndexFileService.FileMonitorAndFileDynamicUpdateService;
 import net.sf.json.JSONArray;
 
 public class BPTreeIndexFileServlet extends HttpServlet {
-
+	/**序列化ID */
 	private static final long serialVersionUID = 1L;
+	/**磁盘索引树 */
 	public static BplusTree treeDisk; // 磁盘索引树
+	/**全局索引树 */
 	public static BplusTree treeAll;// 默认不重建索引，建立全局索引b+树
+	/**索引树Map*/
 	public static Map<String, BplusTree> treemap = new HashMap<>(); // 一个文件名或磁盘名对应一个b+树
-	public static Map<String, BplusTree> treetempmap = new HashMap<>();
+//	public static Map<String, BplusTree> treetempmap = new HashMap<>();
 
 	static { // 静态初始化块
 		ExecutorService cachedThreadPool = Executors.newCachedThreadPool(); // 创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。

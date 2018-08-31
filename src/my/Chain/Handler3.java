@@ -8,7 +8,14 @@ import java.util.List;
 import my.IndexFileService.FileListService;
 import my.IndexServlet.BPTreeIndexFileServlet;
 
+/**
+ * 处理用户选择了类型查询而且需要重建索引的操作
+ * 
+ * @author hmj
+ *
+ */
 public class Handler3 extends Handler{
+	/**结果List集合 */
 	List<String> resultList = new ArrayList<>(); 
 	@Override
 	public ArrayList<String> requestFilename(String filename, String vague, String index, String root, String type) {

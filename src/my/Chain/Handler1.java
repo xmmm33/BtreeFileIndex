@@ -8,12 +8,18 @@ import java.util.List;
 import my.IndexFileService.FileListService;
 import my.IndexServlet.BPTreeIndexFileServlet;
 
+/**
+ * 处理当用户选择了模糊查询 而且要重建索引的逻辑操作
+ * 
+ * @author hmj
+ *
+ */
 public class Handler1 extends Handler{
-	
+	/**结果List集合 */
 	List<String> resultList = new ArrayList<>(); 
 	@Override
 	public ArrayList<String> requestFilename(String filename, String vague, String index, String root, String type) {
-		if(!filename.isEmpty() && vague.equals("true") &&index.equals("true")&& !root.isEmpty()){
+		if(!filename.isEmpty() && vague.equals("true") && !type.equals("true")  &&index.equals("true")&& !root.isEmpty()){
 			if(root.equals("全盘")){
 				long startTime = System.nanoTime();
 				BPTreeIndexFileServlet.treeAll = new FileListService().constructAllTree(index); // 重新建立全局索引树
