@@ -65,13 +65,13 @@ public class BPTreeIndexFileServlet extends HttpServlet {
 			filename = new String(request.getParameter("filename"));
 		}
 		if (request.getParameter("filetype") != null) {
-			filetype = new String(request.getParameter("filetype").getBytes("iso-8859-1"), "utf-8");
+			filetype = new String(request.getParameter("filetype"));
 		}
 		vague = request.getParameter("vague");
 		index = request.getParameter("index");
 		type = request.getParameter("type");
 
-		String root = new String(request.getParameter("root").getBytes("iso-8859-1"), "utf-8"); // 是否选择了磁盘符
+		String root = new String(request.getParameter("root")); // 是否选择了磁盘符
 		String save = request.getParameter("save"); // 是否需要保存索引
 		for (String r : treemap.keySet()) { // treemap里面的key值为所有磁盘符名
 			if (r.indexOf(root) > -1) { // 遍历匹配用户选择的盘符

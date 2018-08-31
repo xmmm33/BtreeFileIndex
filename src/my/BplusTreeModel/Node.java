@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import lombok.Data;
+@Data
 public class Node {
 
 	/** 是否为叶子节点 */
@@ -43,7 +45,13 @@ public class Node {
 		this(isLeaf);
 		this.isRoot = isRoot;
 	}
-
+	
+	public boolean isLeaf() {
+		return isLeaf;
+	}
+	public boolean isRoot() {
+		return isRoot;
+	}
 	// 查询操作
 	public List<String> get(Comparable key) {
 
@@ -685,61 +693,52 @@ public class Node {
 		entries.add(entries.size(), entry);
 	}
 
-	public Node getPrevious() {
-		return previous;
-	}
+//	public Node getPrevious() {
+//		return previous;
+//	}
+//
+//	public void setPrevious(Node previous) {
+//		this.previous = previous;
+//	}
+//
+//	public Node getNext() {
+//		return next;
+//	}
+//
+//	public void setNext(Node next) {
+//		this.next = next;
+//	}
+//	public void setLeaf(boolean isLeaf) {
+//		this.isLeaf = isLeaf;
+//	}
+//
+//	public Node getParent() {
+//		return parent;
+//	}
+//
+//	public void setParent(Node parent) {
+//		this.parent = parent;
+//	}
+//
+//	public List<Entry<Comparable, ArrayList<String>>> getEntries() {
+//		return entries;
+//	}
+//
+//	public void setEntries(List<Entry<Comparable, ArrayList<String>>> entries) {
+//		this.entries = entries;
+//	}
 
-	public void setPrevious(Node previous) {
-		this.previous = previous;
-	}
+//	public List<Node> getChildren() {
+//		return children;
+//	}
+//
+//	public void setChildren(List<Node> children) {
+//		this.children = children;
+//	}
 
-	public Node getNext() {
-		return next;
-	}
-
-	public void setNext(Node next) {
-		this.next = next;
-	}
-
-	public boolean isLeaf() {
-		return isLeaf;
-	}
-
-	public void setLeaf(boolean isLeaf) {
-		this.isLeaf = isLeaf;
-	}
-
-	public Node getParent() {
-		return parent;
-	}
-
-	public void setParent(Node parent) {
-		this.parent = parent;
-	}
-
-	public List<Entry<Comparable, ArrayList<String>>> getEntries() {
-		return entries;
-	}
-
-	public void setEntries(List<Entry<Comparable, ArrayList<String>>> entries) {
-		this.entries = entries;
-	}
-
-	public List<Node> getChildren() {
-		return children;
-	}
-
-	public void setChildren(List<Node> children) {
-		this.children = children;
-	}
-
-	public boolean isRoot() {
-		return isRoot;
-	}
-
-	public void setRoot(boolean isRoot) {
-		this.isRoot = isRoot;
-	}
+//	public void setRoot(boolean isRoot) {
+//		this.isRoot = isRoot;
+//	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

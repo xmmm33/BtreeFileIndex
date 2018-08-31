@@ -5,6 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import lombok.Data;
+
+//使用lombok注释自动生成getset方法 简化代码
+@Data
 public class BplusTree {
 
 	protected Node root; // 根节点
@@ -12,29 +16,29 @@ public class BplusTree {
 	protected Node head; // 叶子节点的链表头
 	
 	// 生成get set方法
-	public Node getRoot() {
-		return root;
-	}
-
-	public void setRoot(Node root) {
-		this.root = root;
-	}
-
-	public int getOrder() {
-		return order;
-	}
-
-	public void setOrder(int order) {
-		this.order = order;
-	}
-
-	public Node getHead() {
-		return head;
-	}
-
-	public void setHead(Node head) {
-		this.head = head;
-	}
+//	public Node getRoot() {
+//		return root;
+//	}
+//
+//	public void setRoot(Node root) {
+//		this.root = root;
+//	}
+//
+//	public int getOrder() {
+//		return order;
+//	}
+//
+//	public void setOrder(int order) {
+//		this.order = order;
+//	}
+//
+//	public Node getHead() {
+//		return head;
+//	}
+//
+//	public void setHead(Node head) {
+//		this.head = head;
+//	}
 
 	public List<String> get(Comparable key) {
 		return root.get(key);

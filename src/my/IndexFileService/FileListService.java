@@ -104,8 +104,14 @@ public class FileListService {
 	public BplusTree constructTree(String root, String index)
 			throws FileNotFoundException, IOException, ClassNotFoundException {
 		Map<String, ArrayList<String>> res = new HashMap<String, ArrayList<String>>();
+		File diskindex;
 		// 得到本地索引文件对象
-		File diskindex = new File(root + root.substring(0, 1) + "盘索引.txt");
+		if(root.contains("C")){
+			diskindex = new File("G:/C盘索引.txt");
+		}else{
+			diskindex = new File(root + root.substring(0, 1) + "盘索引.txt");
+		}
+		
 		if (index.equals("true")) {
 			res = scanFiles(root);
 			String temp = root.substring(0, 1);

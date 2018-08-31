@@ -57,7 +57,7 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 	public void fileCreated(int wd,String rootPath,String name){
 		if(rootPath.substring(0,1).equalsIgnoreCase(jnotifyPath.substring(0,1))){
 			 System.out.println(jnotifyPath + "fileCreated, the created file path is " +
-			 rootPath + "/" + name);
+			 rootPath + name);
 			 String root = rootPath.substring(0,3).toUpperCase().toString();
 			 String fileName = name.substring(name.lastIndexOf("\\")+1);
 //			 FileListService fileListService = new FileListService();
@@ -102,7 +102,7 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 	public void fileRenamed(int wd,String rootPath,String oldName,String newName){
 		if(rootPath.substring(0,1).equalsIgnoreCase(jnotifyPath.substring(0,1))){
 			 System.out.println(jnotifyPath + "旧文件为" +
-			 rootPath + "/" + oldName
+			 rootPath  + oldName
 			 + "新文件为" + rootPath + "\\" + newName);
 			 String root = rootPath.substring(0,3).toUpperCase().toString();
 //			 FileListService fileListService = new FileListService();
@@ -147,15 +147,27 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 		if(rootPath.substring(0,1).equalsIgnoreCase(jnotifyPath.substring(0,1))){
 			// 如果删除的是树
 			 System.out.println(jnotifyPath + "fileDeleted , the deleted file path is " +
-			 rootPath + "/" + name);
+			 rootPath + name);
 			 String root = rootPath.substring(0,3).toUpperCase().toString();
 //			 FileListService fileListService = new FileListService();
 			 String fileName = name.substring(name.lastIndexOf("\\")+1);
+			 String fileLujing =root +  name.substring(0,name.lastIndexOf("\\")+1);
 			 //测试删除文件路径是否得到
-//			 ArrayList<String> treeList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
+			 ArrayList<String> treeList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
+			 //排除同名文件 但路径不同 删除的时候正确删除
+			 if(treeList.size() != 1 && !treeList.isEmpty()){
+				 for(int i=0; i<treeList.size(); i++){
+					 if(treeList.get(i).toString().substring(0, treeList.get(i).toString().lastIndexOf("\\")+1).equals(fileLujing)){
+						 String temp = treeList.get(i).toString();
+						 BPTreeIndexFileServlet.treemap.get(root).get(fileName).remove(temp);
+						 System.out.println("索引更新成功");
+						 return;
+					 }
+				 }
+			 }
 			 BPTreeIndexFileServlet.treemap.get(root).get(fileName).clear();
 			 //测试删除文件是否成功
-//			 treeList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
+			 treeList = (ArrayList<String>) BPTreeIndexFileServlet.treemap.get(root).get(fileName);
 			 BPTreeIndexFileServlet.treemap.get(root).remove(fileName);
 			 System.out.println("索引更新成功");
 /*			 try {
@@ -181,8 +193,7 @@ public class FileMonitorAndFileDynamicUpdateService extends JNotifyAdapter imple
 	}
 	//文件修改事件不用进行索引更新 因为只是文件内容发生了变化
 	public void fileModified(int wd, String rootPath, String name) {
-		  System.err.println(jnotifyPath + "the modified file path is " + rootPath + "/" + name);
-		  
+		  System.err.println(jnotifyPath + "the modified file path is " + rootPath  + name);		  
 		 }
 	
 	public void run() {
